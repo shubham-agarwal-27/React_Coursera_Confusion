@@ -2,39 +2,5 @@
 
 
 var fs = require('fs');
-var first = true;
-
-function readLines(input, func) {
-  var remaining = '';
-
-  input.on('data', function(data) {
-    remaining += data;
-    var index = remaining.indexOf('\n');
-    while (index > -1) {
-      var line = remaining.substring(0, index);
-      remaining = remaining.substring(index + 1);
-      func(line);
-      index = remaining.indexOf('\n');
-    }
-  });
-
-  input.on('end', function() {
-    if (remaining.length > 0) {
-      func(remaining);
-    }
-  });
-}
-
-function func(data) {
-	if(first){
-		var out = fs.createWriteStream('.git/hooks/pre-push', { encoding: "utf8" });
-		out.write(data);
-	    out.end();
-	    first = false;
-	}
-	else
-		fs.appendFileSync('.git/hooks/pre-push', data);
-}
-
-var input = fs.createReadStream('input.js');
-readLines(input, func);
+var text = fs.readFileSync('input.js', "utf8");
+fs.writeFileSync('.git/hooks/pre-push', text, "utf8");
