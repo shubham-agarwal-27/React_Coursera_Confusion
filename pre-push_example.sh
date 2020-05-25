@@ -7,9 +7,12 @@ if [ $protected_branch = $current_branch ]; then
     read -p "You're about to push master, is that what you intended? [y|n] " -n 3 -r < /dev/tty
     echo
     if echo $REPLY | grep -E '^[Yy]$' > /dev/null; then
+    	read -p "You're about to push master, is that what you intended? [y|n] " -n 3 -r < /dev/tty
+    	echo
+    	echo $REPLY
         exit 0 # push will execute
     fi
     exit 1 # push will not execute
 else
     exit 0 # push will execute this time
-fi
+fi	
