@@ -38,4 +38,4 @@ while true; do
       [Nn] ) exit;;
       * ) echo "Please answer y or n for yes or no.";;
   esac
-don
+done
