@@ -64,3 +64,22 @@ if [ $protected_branch = $current_branch ]; then
 else
     exit 0 # push will execute this time
 fi    
+
+
+
+
+#!/usr/bin/env node 
+
+
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('What do you think of Node.js? ', (answer) => {
+  // TODO: Log the answer in a database
+  console.log(`Thank you for your valuable feedback: ${answer}`);
+  rl.close();
+});
