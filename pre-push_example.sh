@@ -6,6 +6,8 @@ current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 if [ $protected_branch = $current_branch ]; then
     read -p "You're about to push master, is that what you intended? [y|n] " -n 3 -r < /dev/tty
     echo
+    echo
+    echo $REPLY
     if echo $REPLY | grep -E '^[Yy]$' > /dev/null; then
     	read -p "You're about to push master, is that what you intended? [y|n] " -n 3 -r < /dev/tty
     	echo
