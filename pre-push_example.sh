@@ -39,3 +39,28 @@ while true; do
       * ) echo "Please answer y or n for yes or no.";;
   esac
 done
+
+
+
+
+
+
+
+
+#!/usr/bin/env bash
+
+protected_branch='master'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+if [ $protected_branch = $current_branch ]; then
+    read -p "You're about to push master, is that what you intended? [y|n] " -n 5 -r < /dev/tty
+    echo
+    echo
+    echo $REPLY
+    if echo $REPLY | grep -E '^[Yy]es$' > /dev/null; then
+        exit 0 # push will execute
+    fi
+    exit 1 # push will not execute
+else
+    exit 0 # push will execute this time
+fi    
