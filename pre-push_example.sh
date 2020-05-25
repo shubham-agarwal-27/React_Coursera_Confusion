@@ -10,7 +10,7 @@ if [ $protected_branch = $current_branch ]; then
     	read -p "You're about to push master, is that what you intended? [y|n] " -n 3 -r < /dev/tty
     	echo
     	echo $REPLY
-        exit 0 # push will execute
+        exit 0 # push executes
     fi
     exit 1 # push will not execute
 else
