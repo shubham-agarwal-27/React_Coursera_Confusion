@@ -101,3 +101,29 @@ stdin.on('keypress', function (chunk, key) {
   process.stdout.write('Get Chunk: ' + chunk + '\n');
   if (key && key.ctrl && key.name == 'c') process.exit();
 });
+
+
+
+
+
+
+
+#!/usr/bin/env node 
+
+function processThis(input) {
+  console.log(input);  //your code goes here
+} 
+
+console.log("Inside pre-push");
+
+process.stdin.resume();
+process.stdin.setEncoding("ascii");
+_input = "";
+process.stdin.on("data", function (input) {
+  _input += input;
+});
+
+process.on('SIGINT', function(){
+    console.log(input);
+    process.exit();
+});
