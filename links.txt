@@ -1,0 +1,246 @@
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/browse.ts
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/clients/github/githubClient.ts
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/helper/controlProvider.ts
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+helper/devOps/azureDevOpsHelper.ts :
+
+ private async getBuildDefinitionPayload(pipelineName: string, inputs: WizardInputs): Promise<BuildDefinition> {
+        let queueId = await this.getAgentQueueId(inputs.organizationName, inputs.project.name, HostedVS2017QueueName);
+        let repositoryProperties: BuildDefinitionRepositoryProperties = null;
+        let properties = { 'source': 'ms-azure-devops.azure-pipelines' };
+
+        if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
+            repositoryProperties = {
+                apiUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}`,
+                branchesUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/branches`,
+                cloneUrl: inputs.sourceRepository.remoteUrl,
+                connectedServiceId: inputs.sourceRepository.serviceConnectionId,
+                defaultBranch: inputs.sourceRepository.branch,
+                fullName: inputs.sourceRepository.repositoryName,
+                refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
+            };
+        }
+
+        return {
+            name: pipelineName,
+            type: 2, //YAML process type
+            quality: 1, // Defintion=1, Draft=0
+            path: "\\", //Folder path of build definition. Root folder in this case
+            project: {
+                id: inputs.project.id,
+                name: inputs.project.name
+            },
+            process: {
+                type: 2,
+                yamlFileName: path.join(inputs.pipelineConfiguration.workingDirectory, path.basename(inputs.pipelineConfiguration.filePath))
+            },
+            queue: {
+                id: queueId // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML
+            },
+            triggers: [
+                {
+                    triggerType: 2, // Continuous integration trigger type
+                    settingsSourceType: 2, // Use trigger source as specified in YAML
+                    batchChanges: false
+                }
+            ],
+            repository: {
+                id: inputs.sourceRepository.repositoryId,
+                name: inputs.sourceRepository.repositoryName,
+                type: inputs.sourceRepository.repositoryProvider,
+                defaultBranch: inputs.sourceRepository.branch,
+                url: inputs.sourceRepository.remoteUrl,
+                properties: repositoryProperties
+            },
+            properties: properties
+        };
+    }
+
+
+
+public async createBuildDefinition(organizationName: string, buildDefinition: BuildDefinition): Promise<any> {
+    let url = `${AzureDevOpsBaseUrl}/${organizationName}/${buildDefinition.project.id}/_apis/build/definitions`;
+
+    return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        url: url,
+        method: "POST",
+        headers: {
+            "Accept": "application/json;api-version=5.0-preview.7;"
+        },
+        body: buildDefinition,
+        serializationMapper: null,
+        deserializationMapper: null
+    });
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/0a2a96e239eb6e01af15f84323cd191950b05063/src/configure/helper/templateHelper.ts#L263
+
+ async function analyzeRepo(repoPath: string): Promise<AnalysisResult> {
+    let deferred: Q.Deferred<AnalysisResult> = Q.defer();
+    fs.readdir(repoPath, (err, files: string[]) => {
+        let result: AnalysisResult = new AnalysisResult();
+        result.languages = [];
+        result.languages = isDockerApp(files) ? result.languages.concat(SupportedLanguage.DOCKER) : result.languages;
+        result.languages = isNodeRepo(files) ? result.languages.concat(SupportedLanguage.NODE) : result.languages;
+        result.languages = isPythonRepo(files) ? result.languages.concat(SupportedLanguage.PYTHON) : result.languages;
+        result.languages = isDotnetCoreRepo(files) ? result.languages.concat(SupportedLanguage.DOTNETCORE) : result.languages;
+
+        result.isFunctionApp = err ? true : isFunctionApp(files),
+
+            deferred.resolve(result);
+    });
+
+    return deferred.promise;
+}
+
+
+
+
+function isNodeRepo(files: string[]): boolean {
+    let nodeFilesRegex = '\\.ts$|\\.js$|package\\.json$|node_modules';
+    return files.some((file) => {
+        let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
+        return result;
+    });
+}
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+let azureAccountExtension = vscode.extensions.	("ms-vscode.azure-account");
+extensionVariables.azureAccountExtensionApi = <AzureAccountExtensionExports>azureAccountExtension.exports;
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+private async getGithubPatToken(): Promise<void> {
+    if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
+        this.inputs.githubPATToken = await this.controlProvider.showInputBox(constants.GitHubPat, {
+            placeHolder: Messages.enterGitHubPat,
+            prompt: Messages.githubPatTokenHelpMessage,
+            validateInput: (inputValue) => {
+                return !inputValue ? Messages.githubPatTokenErrorMessage : null;
+            }
+        });
+    }
+}
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/0a2a96e239eb6e01af15f84323cd191950b05063/src/configure/clients/github/githubClient.ts#L29
+
+ private async _getGitHubSecretKey() : Promise<GitHubSecretKey> {
+    let request = <UrlBasedRequestPrepareOptions> {
+            url: GitHubProvider.getFormattedGitHubApiUrlBase(this.url) + "/actions/secrets/public-key",
+            method: 'GET',
+            headers: {
+                "User-Agent": UserAgent,
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + this.patToken,
+                "Accept": "*/*"
+            },
+            serializationMapper: null,
+            deserializationMapper: null
+        }
+    let restClient = new RestClient();
+    return (await restClient.sendRequest(request)) as GitHubSecretKey;
+}
+
+
+
+public sendRequest<TResult>(options: PathTemplateBasedRequestPrepareOptions | UrlBasedRequestPrepareOptions): Promise<TResult> {
+    return new Promise<TResult>((resolve, reject) => {
+        super.sendRequestWithHttpOperationResponse<TResult>(options)
+            .then((response) => {
+                if (response.response.statusCode >= 300) {
+                    reject(response.body);
+                }
+                resolve(response.body);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+}
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/helper/DataSourceHandler.ts
+
+let kubeConfig = restClient.sendRequestWithHttpOperationResponse(
+{
+    url: inputs.azureSession.environment.portalUrl + `/subscriptions/${parsedResourceId.subscriptionId}/resourceGroups/${parsedResourceId.resourceGroup}/providers/Microsoft.ContainerService/managedClusters/${parsedResourceId.resourceName}/listClusterAdminCredential?api-version=2020-01-01`,
+    method: "POST",
+    deserializationMapper: null,
+    serializationMapper: null
+});
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/helper/azureSessionHelper.ts
+https://github.com/microsoft/vscode-deploy-azure/blob/master/src/configure/helper/templateParameterHelper.ts
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/3b7dfe8d353e3316708fada909e52ddeb27255e0/src/configure/configurers/remoteGitHubWorkflowConfigurer.ts#L218
+
+
+private async createAzureSPN(inputDescriptor: ExtendedInputDescriptor, inputs: WizardInputs) {
+    let scope = InputControl.getInputDescriptorProperty(inputDescriptor, "scope", inputs.pipelineConfiguration.params)
+    return this.getAzureSPNSecret(inputs, scope);
+
+}
+
+
+
+
+
+https://github.com/microsoft/vscode-deploy-azure/blob/3b7dfe8d353e3316708fada909e52ddeb27255e0/src/configure/configurers/localGithubWorkflowConfigurer.ts#L259
+
+
+protected async getAzureSPNSecret(inputs: WizardInputs, scope?: string): Promise<string> {
+    scope = !scope ? inputs.targetResource.resource.id : scope;
+    let aadAppName = GraphHelper.generateAadApplicationName(inputs.sourceRepository.remoteName, 'github');
+    let aadApp = await GraphHelper.createSpnAndAssignRole(inputs.azureSession, aadAppName, scope);
+    return JSON.stringify({
+        "clientId": `${aadApp.appId}`,
+        "clientSecret": `${aadApp.secret}`,
+        "subscriptionId": `${inputs.subscriptionId}`,
+        "tenantId": `${inputs.azureSession.tenantId}`,
+    });
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+https://docs.microsoft.com/en-us/rest/api/azure/devops/git/trees/get?view=azure-devops-rest-5.1
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
