@@ -1,3 +1,4 @@
 npm install node-fetch --save
+npm install opn
 
 echo "hi"
