@@ -1,1 +1,6 @@
-git log -n 2
+var=$(git ls-remote https://github.com/shubham-agarwal-27/React_Coursera_Confusion master 2>&1)
+
+result=$(echo $var | cut -d' ' -f1)
+
+echo $result
+
