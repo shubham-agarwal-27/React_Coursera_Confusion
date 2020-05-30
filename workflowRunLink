@@ -46,5 +46,4 @@ async function solve() {
 	console.log("You can visit the following url to have a look at the workflow run: " + workflow_url);
 }
 
-solve();
-
+setTimeout(solve, 6000);
