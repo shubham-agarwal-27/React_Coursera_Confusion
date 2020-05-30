@@ -5,5 +5,3 @@ var=$(git ls-remote https://github.com/shubham-agarwal-27/React_Coursera_Confusi
 result=$(echo $var | cut -d' ' -f1)
 
 echo $result
-
-git rebase -i
