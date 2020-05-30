@@ -69,7 +69,7 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 
 added node input hook
-changed again..
+changed again.
 
 var=$(git ls-remote https://github.com/shubham-agarwal-27/React_Coursera_Confusion master 2>&1)
 
