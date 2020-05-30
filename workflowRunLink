@@ -1,0 +1,48 @@
+#!/usr/bin/env node 
+
+
+var request = require('request');
+
+function getUrlFromWorkflowLatestRun(workflow_id){
+	var url;
+	var opts = {
+		url: 'https://api.github.com/repos/shubham-agarwal-27/React_Coursera_Confusion/actions/workflows/' + workflow_id + '/runs',
+		headers: {
+			'User-Agent': 'request'
+		}
+	};
+
+  	return new Promise(function(resolve, reject) {
+    	request(opts, function(error, response, body){
+			url = JSON.parse(response['body'])['workflow_runs'][0]['html_url'];
+			resolve(url);
+		});
+  	});
+}
+
+
+var getUrlOfWorkflow = async () => {
+	
+	var opts = {
+		url: 'https://api.github.com/repos/shubham-agarwal-27/React_Coursera_Confusion/actions/workflows',
+		headers: {
+			'User-Agent': 'request'
+		}
+	};
+
+  	return new Promise(function(resolve, reject) {
+    	request(opts, async function(error, response, body){
+			var url = await getUrlFromWorkflowLatestRun(JSON.parse(response['body'])['workflows'][0]['id']);
+			resolve(url);
+		});
+  	});
+}
+
+
+async function solve() {
+	var workflow_url = await getUrlOfWorkflow();
+	console.log("You can visit the following url to have a look at the workflow run: " + workflow_url);
+}
+
+solve();
+
