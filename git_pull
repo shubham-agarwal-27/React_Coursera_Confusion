@@ -1,1 +1,1 @@
-git push --no-verify
+git fetch --all
