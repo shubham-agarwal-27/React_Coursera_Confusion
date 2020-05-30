@@ -1,3 +1,2 @@
 git push --no-verify
 .git/hooks/pre-push
-git pull
