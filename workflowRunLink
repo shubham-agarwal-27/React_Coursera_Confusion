@@ -48,4 +48,4 @@ async function solve() {
 
 console.log("Your workflow is being prepared. Please wait a moment..");
 
-setTimeout(solve, 16000);
+setTimeout(solve, 19000);
