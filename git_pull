@@ -1,2 +1,1 @@
-git pull
-exit 1
+git push --no-verify
