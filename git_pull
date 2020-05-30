@@ -6,4 +6,4 @@ result=$(echo $var | cut -d' ' -f1)
 
 echo $result
 
-git cherry-pick $result
+git remote prune origin
