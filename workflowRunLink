@@ -32,6 +32,7 @@ var getUrlOfWorkflow = async () => {
 
   	return new Promise(function(resolve, reject) {
     	request(opts, async function(error, response, body){
+    		console.log(JSON.parse(response['body'])['workflows']);
 			var url = await getUrlFromWorkflowLatestRun(JSON.parse(response['body'])['workflows'][0]['id']);
 			resolve(url);
 		});
@@ -40,6 +41,7 @@ var getUrlOfWorkflow = async () => {
 
 
 async function solve() {
+	console.log("Entering URL Fucntion--------------------------------------------------------------------------------");
 	var workflow_url = await getUrlOfWorkflow();
 	console.log("You can visit the following url to have a look at the workflow run: " + workflow_url);
 }
