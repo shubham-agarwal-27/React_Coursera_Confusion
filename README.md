@@ -70,3 +70,17 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 added node input hook
 changed again......
+
+can we provide extra options to the invoking command through hooks
+What happens if a workflow already present in repo which is configured to execute on push but no runs present for it yet
+Do a git pull at the end of pre-push hook (before it completing)
+
+
+
+
+
+1. Workflow being triggered if no old workflow exists.
+2. if new exists then cancel workflow. Now the second issue above (YAML Parsing)
+3. Show the information regarding the new workflow to the user so that they can have a look at the run.
+4. We have got a workaround for the Remote repo and the local repo not being in sync, but that might not be the most preferred solution, so I have to explore one or two things around that.
+5. So once we are sure about that the workflow being done is what is required we can work on the azure login and once that is solved, we can use those credentials to use available resources and call an API to deploy to azure.
