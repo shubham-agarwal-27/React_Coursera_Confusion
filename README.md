@@ -87,4 +87,4 @@ Do a git pull at the end of pre-push hook (before it completing)
 
 
 
-1. "git push origin master" and pre-push hook has git pull in the end : SAME ERROR...
+1. "git push origin master" and pre-push hook has git pull in the end : SAME ERROR
