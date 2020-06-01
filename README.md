@@ -88,5 +88,4 @@ Do a git pull at the end of pre-push hook (before it completing)
 
 
 1. "git push origin master" and pre-push hook has git pull in the end : SAME ERROR..
-2. Github details regarding PAT token
-3. 
+2. User input for Github PAT..
