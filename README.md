@@ -83,4 +83,4 @@ Do a git pull at the end of pre-push hook (before it completing)
 2. if new exists then cancel workflow. Now the second issue above (YAML Parsing)
 3. Show the information regarding the new workflow to the user so that they can have a look at the run.
 4. We have got a workaround for the Remote repo and the local repo not being in sync, but that might not be the most preferred solution, so I have to explore one or two things around that.
-5. So once we are sure about that the workflow being done is what is required we can work on the azure login and once that is solved, we can use those credentials to use available resources and call an API to deploy to azure..
+5. So once we are sure about that the workflow being done is what is required we can work on the azure login and once that is solved, we can use those credentials to use available resources and call an API to deploy to azure
