@@ -5,3 +5,5 @@ npm install opn
 npm install request
 npm install tweetsodium
 npm install tweetnacl
+npm install util
+npm install readline
